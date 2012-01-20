@@ -30,10 +30,10 @@ The dependency footprint is rather small (only L<Getopt::Long>).
     my $validation_ref = {
         
         # name of the program
-        name => 'MyScript', # fallback to C<$0>, if not set
+        name => 'MyScript', # fallback to $0, if not set
         
         # version info
-        version => '1.0.1', # fallback to C<$main::VERSION> or C<"unknown">, if not set
+        version => '1.0.1', # fallback to $main::VERSION or "unknown", if not set
         
         # the struct of the params
         struct => [
@@ -41,7 +41,7 @@ The dependency footprint is rather small (only L<Getopt::Long>).
             # extended example
             'somestring|s=s' => {
                 description => 'The description of somestring',
-                constraint  => sub { my ( $val ) = @_; return index( $val, '123' ) > -1 }, # all strings containing 123
+                constraint  => sub { my ( $val ) = @_; return index( $val, '123' ) > -1 },
                 required    => 1,
             },
             
