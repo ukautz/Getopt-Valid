@@ -13,7 +13,7 @@ Useful for shell scripts.
 I wrote this, because i need input validation / processing in most of my scripts. This keeps it formal and readable while
 not making me re-implement the wheel over and over again.
 
-
+The dependency footprint is rather small (only L<Getopt::Long>).
 
 =head1 SYNOPSIS
 
@@ -21,9 +21,6 @@ not making me re-implement the wheel over and over again.
     
     use strict;
     use warnings;
-    use FindBin qw/ $Bin /;
-    use lib "$Bin/../lib";
-    use Data::Dumper;
     use Getopt::Valid;
 
     #
@@ -222,7 +219,6 @@ use warnings;
 use version 0.74; our $VERSION = qv( "v0.1.0" );
 
 use Getopt::Long;
-use Data::Dumper;
 
 use base qw/ Exporter /;
 our @EXPORT = qw/ GetOptionsValid /;
@@ -636,7 +632,7 @@ sub errors {
 
 =over
 
-=item *
+=item * L<Getopt::Long>
 
 =back
 
