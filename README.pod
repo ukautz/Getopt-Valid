@@ -1,0 +1,299 @@
+=head1 NAME
+
+Getopt::Valid - Extended processing and validation of command line options
+
+=head1 DESCRIPTION
+
+Implements an extended getopt mechanism relying on L<Getopt::Long> but provides extended validation and filtering capabilities.
+
+Useful for shell scripts.
+
+I wrote this, because i need input validation / processing in most of my scripts. This keeps it formal and readable while
+not making me re-implement the wheel over and over again.
+
+
+
+=head1 SYNOPSIS
+
+    #!/usr/bin/perl
+    
+    use strict;
+    use warnings;
+    use FindBin qw/ $Bin /;
+    use lib "$Bin/../lib";
+    use Data::Dumper;
+    use Getopt::Valid;
+
+    #
+    # VALIDATION DEFINITION
+    #
+
+    my $validation_ref = {
+        
+        # name of the program
+        name => 'MyScript', # fallback to $0, if not set
+        
+        # version info
+        version => '1.0.1', # fallback to $main::VERSION or "unknown", if not set
+        
+        # the struct of the params
+        struct => [
+            
+            # extended example
+            'somestring|s=s' => {
+                description => 'The description of somestring',
+                constraint  => sub { my ( $val ) = @_; return index( $val, '123' ) > -1 }, # all strings containing 123
+                required    => 1,
+            },
+            
+            # Example using only validator and fallback to default description.
+            # This value is optional (mind: no "!")
+            'otherstring|o=s' => qr/^([a-z]+)$/, # all lowercase words
+            
+            # Example of using integer key with customized description.
+            # This value is optional (mind the "!")
+            'someint|i=i!' => 'The description of someint',
+            
+            # Bool value using the default description
+            'somebool|b' => undefm
+            
+            # the following is implicit, prints out the usag and exists.. can be overwritten
+            #'help|h' => 'Show this help'
+        ]
+    };
+
+    #
+    # FUNCTIONAL USAGE
+    #
+
+    my $validated_args_ref = GetOptionsValid( $validation_ref )
+        || die "Failed to validate input\n".
+            join( "\nERRORS:\n", @Getopt::Valid::ERRORS, "\n\nUSAGE:\n", $Getopt::Valid::USAGE );
+    
+    # acces the user input
+    print "Got $validated_args_ref->{ somestring }\n";
+    
+    
+    #
+    # OBJECT USAGE
+    #
+
+    my $opt = Getopt::Valid->new( $validation_ref );
+
+    # collect data from @ARGV.. you could manipulate @ARGV and run again..
+    $opt->collect_argv;
+
+    # whether validates
+    if ( $opt->validate ) {
+        
+        # acces valid input data
+        print "Got ". $opt->valid_args->{ somestring }. "\n";
+    }
+
+    # oops, not valid
+    else {
+        
+        # print errors
+        print "Oops ". $opt->errors( " ** " ). "\n";
+        
+        # print usage
+        print $opt->usage();
+    }
+
+=head1 VALIDATOR SYNTAX
+
+=over
+
+=item * name STRING
+
+Name of the program. Use in help output.
+
+Defaults to $0
+
+=item * version VERSION STRING
+
+Version of the program. Used in help output. Tries $main::VERSION, if not set.
+
+Defaults to "unknown"
+
+=item * underscore BOOL
+
+Whether "-" characters in arguments shall be rewritten to "_" in the result.
+
+Default: 0 (disabled)
+
+=item * struct ARRAYREF
+
+Structure of the arguments. The order will be respected in the help generation.
+
+Can be written in 4 styles
+
+=over
+
+=item * SCALAR
+
+    $struct_ref = [
+        'argument-name|a=s' => 'Description text for help',
+        'other-arg' => 'Description text for help'
+    ];
+
+=item * REGEXP
+
+    $struct_ref = [
+        'argument-name|a=s' => qr/(bla|blub),
+    ];
+
+=item * CODE
+
+    $struct_ref = [
+        'argument-name|a=s' => sub {
+            my ( $value, $name, $validator ) = @_;
+            warn "Checking '$name' = '$value'\n";
+            return $value eq 'ok';
+        }
+    ];
+
+=item * HASH
+
+    $struct_ref = [
+        'argument-name|a=s' => {
+            
+            # the description for the help
+            description => 'Description text for help',
+            
+            # default value, if not given
+            default => 'Some Default',
+            
+            # whether required (redundant for bool), default: 0
+            required => 1|0,
+            
+            # constraint can be regexp or code-ref, see above
+            constraint => sub { .. },
+            
+            # modify value before handing to constraint (if any)
+            prefilter => sub {
+                my ( $value, $name, $validator ) = @_;
+                return "THE NEW $value\n";
+            },
+            
+            # modify value after constraint check (if any). runs only if valid (or no constraint).
+            postfilter => sub {
+                my ( $value, $name, $validator ) = @_;
+                return "THE NEW $value\n";
+            },
+            
+            # trigger is called in any case, even if arg not given
+            anytrigger => sub {
+                my ( $value, $name, $validator ) = @_;
+                return ; # ignored
+            },
+            
+            # trigger is called if value is defined / given (independent if validated)
+            settrigger => sub {
+                my ( $value, $name, $validator ) = @_;
+                return ; # ignored
+            },
+            
+            # trigger is called if value is validated (or no validator is given)
+            oktrigger => sub {
+                my ( $value, $name, $validator ) = @_;
+                return ; # ignored
+            },
+            
+            # trigger is called if value is invalid (or no validator is given)
+            oktrigger => sub {
+                my ( $value, $name, $validator ) = @_;
+                return ; # ignored
+            },
+        }
+    ];
+
+=back
+
+=back
+
+=head1 EXPORTED METHODS
+
+In functional context, you can access the errors via C<@Getopt::Valid::ERRORS> and the usage via C<$Getopt::Valid::USAGE>
+
+=head2 GetOptionsValid $validator_ref
+
+See L</VALIDATOR SYNTAX>
+
+=head1 CLASS METHODS
+
+=head2 new $validator_ref
+
+Constructor. See L</VALIDATOR SYNTAX>
+
+=head2 collect_argv
+
+Collect args found in C<@ARGV> using L<Getopt::Long#GetOptions>
+
+=head2 args
+
+Set/get args. 
+
+=head2 validate
+
+Performs validation of the input. Returns differently in array- or scalar-context.
+
+=over
+
+=item * Array context
+
+Returns ( has_errors, hashref_of_valid_input )
+
+    my ( $valid, $input_ref ) = $obj->validate();
+    if ( $valid ) {
+        print "All good, got arg 'some_arg': $input_ref->{ some_arg }\n";
+    }
+
+=item * Scalar context
+
+Returns whether validation was successfull (or any error ocurred)
+
+    if ( scalar $obj->validate() ) {
+        print "All good, got arg 'some_arg': ". $opt->valid_args->{ some_arg }. "\n";
+    }
+
+=back
+
+=head2 valid_args
+
+Returns validated args
+
+=head2 usage
+
+Returns usage as string
+
+=head2 errors
+
+Returns errors as joined string or array of strings of the last valid-run
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+=back
+
+=head1 AUTHOR
+
+=over
+
+=item * Ulrich Kautz <uk@fortrabbit.de>
+
+=back
+
+=head1 COPYRIGHT AND WARRANTY
+
+Copyright (c) 2011 the L</AUTHOR> as listed above.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+=head1 LICENCSE
+
+This library is free software and may be distributed under the same terms as perl itself.
+
