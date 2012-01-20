@@ -216,7 +216,7 @@ Can be written in 4 styles
 use strict;
 use warnings;
 
-use version 0.74; our $VERSION = qv( "v0.1.0" );
+use version 0.74; our $VERSION = qv( "v0.1.2" );
 
 use Getopt::Long;
 
@@ -634,6 +634,8 @@ sub errors {
 
 =item * L<Getopt::Long>
 
+=item * Latest release on Github L<http://github.com/ukautz/Getopt-Valid>
+
 =back
 
 =head1 AUTHOR
@@ -641,6 +643,7 @@ sub errors {
 =over
 
 =item * Ulrich Kautz <uk@fortrabbit.de>
+
 
 =back
 

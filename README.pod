@@ -274,6 +274,8 @@ Returns errors as joined string or array of strings of the last valid-run
 
 =item * L<Getopt::Long>
 
+=item * Latest release on Github L<http://github.com/ukautz/Getopt-Valid>
+
 =back
 
 =head1 AUTHOR
@@ -281,6 +283,7 @@ Returns errors as joined string or array of strings of the last valid-run
 =over
 
 =item * Ulrich Kautz <uk@fortrabbit.de>
+
 
 =back
 
