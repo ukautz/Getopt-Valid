@@ -33,10 +33,10 @@ not making me re-implement the wheel over and over again.
     my $validation_ref = {
         
         # name of the program
-        name => 'MyScript', # fallback to $0, if not set
+        name => 'MyScript', # fallback to C<$0>, if not set
         
         # version info
-        version => '1.0.1', # fallback to $main::VERSION or "unknown", if not set
+        version => '1.0.1', # fallback to C<$main::VERSION> or C<"unknown">, if not set
         
         # the struct of the params
         struct => [
@@ -650,7 +650,7 @@ sub errors {
 
 =head1 COPYRIGHT AND WARRANTY
 
-Copyright (c) 2011 the L</AUTHOR> as listed above.
+Copyright (c) 2012 the L</AUTHOR> as listed above.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
