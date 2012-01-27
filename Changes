@@ -1,0 +1,4 @@
+Version 0.1.3, 2012-01-27
+
+	- description can be now array reference or scalar (string)
+
