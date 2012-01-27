@@ -216,14 +216,14 @@ Can be written in 4 styles
 use strict;
 use warnings;
 
-use version 0.74; our $VERSION = qv( "v0.1.3" );
+use version 0.74; our $VERSION = qv( "v0.1.4" );
 
 use Getopt::Long;
 
 use base qw/ Exporter /;
 our @EXPORT = qw/ GetOptionsValid /;
 
-our $REQUIRED_STR = '[required]';
+our $REQUIRED_STR = '[REQ]';
 our @ERRORS;
 our $ERROR;
 our $USAGE = '';
@@ -349,7 +349,6 @@ sub _parse_struct {
         
         $description = "$name value"
             unless $description;
-        $description .= ' '. $REQUIRED_STR if $required;
         
         $updated_struct{ $name } = {
             required    => $required,
@@ -604,7 +603,9 @@ sub usage {
         my @arg_out = ( '  --'. $name );
         push @arg_out, ' | -'. $ref->{ short } if $ref->{ short };
         push @arg_out, ' : '. $mode_out->( $ref->{ mode } );
-        push @output, join( '', @arg_out );
+        my $arg_out = join( '', @arg_out );
+        $arg_out .= ' '. $REQUIRED_STR if $ref->{ required };
+        push @output, $arg_out;
         
         my @description = ref( $ref->{ description } )
             ? ( map { '    '. $_ } @{ $ref->{ description } } )
