@@ -218,6 +218,7 @@ use warnings;
 
 use version 0.74; our $VERSION = qv( "v0.1.4" );
 
+use File::Spec;
 use Getopt::Long;
 
 use base qw/ Exporter /;
