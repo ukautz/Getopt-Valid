@@ -14,6 +14,7 @@ use_ok( 'Getopt::Valid' );
 my %validator = (
     name    => 'Test',
     version => '0.1.0',
+    description => 'test description',
     struct  => [
         'somestring|s=s!' => undef,
         'otherstring|o=s' => {
@@ -35,6 +36,7 @@ my $validator = Getopt::Valid->new( \%validator );
 my $expected = <<USAGE;
 Program: Test
 Version: 0.1.0
+Description: test description
 
 Usage: t/05.t <parameters>
 
