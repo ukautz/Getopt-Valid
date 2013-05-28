@@ -260,7 +260,7 @@ Constructor. See L</VALIDATOR SYNTAX>
 sub new {
     my ( $class, $args_ref ) = @_;
     $class = ref $class if ref $class;
-    die "Usage: Getopt::Valid->new( { name => .., version => .., struct => [ .. ] } )"
+    die "Usage: Getopt::Valid->new( { name => .., version => .., description => .., struct => [ .. ] } )"
         unless $args_ref && ref( $args_ref ) eq 'HASH' && $args_ref->{ struct } && ref( $args_ref->{ struct } ) eq 'ARRAY';
     ( bless {
         %$args_ref,
@@ -572,6 +572,7 @@ sub usage {
     my @output = (
         sprintf( 'Program: %s', $self->{ name } || $0 ),
         sprintf( 'Version: %s', $self->{ version } || eval { $main::VERSION } || 'unknown' ),
+        sprintf( 'Description: %s', $self->{ description } || 'none' ),
         '',
         'Usage: '. $0. ' <parameters>',
         '',
