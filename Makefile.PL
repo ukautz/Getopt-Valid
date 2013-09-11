@@ -16,5 +16,10 @@ WriteMakefile(
     'Getopt::Long' => 0,
     'File::Spec' => 0
   },
+  META_MERGE        => {
+    resources => {
+      repository => 'https://github.com/ukautz/Getopt-Valid',
+    },
+  },
   test => {TESTS => 't/*.t t/*/*.t'}
 );
